@@ -12,7 +12,6 @@ URL=http://localhost:8080
 docker run -d --name nc -p 8080:80 \
 	-e SQLITE_DATABASE=nextcloud -e NEXTCLOUD_ADMIN_USER=admin -e NEXTCLOUD_ADMIN_PASSWORD="$ADMIN_PASS" \
 	-e NEXTCLOUD_TRUSTED_DOMAINS=localhost \
-	-v "$APP_DIR:/var/www/html/custom_apps/teamfolder_nodownload:ro" \
 	"nextcloud:$VERSION-apache" >/dev/null
 
 for _ in $(seq 120); do
@@ -23,6 +22,9 @@ curl -fs "$URL/status.php"; echo
 
 occ() { docker exec -u www-data nc php occ "$@"; }
 occ app:install groupfolders || occ app:enable groupfolders
+# copied, not mounted: a bind mount below custom_apps leaves that directory root-owned and the app store can't install there
+docker cp "$APP_DIR" nc:/var/www/html/custom_apps/teamfolder_nodownload
+docker exec nc chown -R www-data:www-data /var/www/html/custom_apps/teamfolder_nodownload
 occ app:enable teamfolder_nodownload
 
 occ group:add blocked
