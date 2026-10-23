@@ -9,14 +9,14 @@
 	<licence>agpl</licence>
 	<author homepage="https://github.com/nowrap">nowrap</author>
 	<namespace>TeamfolderNoDownload</namespace>
-	<category>files</category>
-	<website>https://github.com/nowrap/teamfolder_nodownload</website>
-	<bugs>https://github.com/nowrap/teamfolder_nodownload/issues</bugs>
-	<repository type="git">https://github.com/nowrap/teamfolder_nodownload.git</repository>
 	<types>
 		<!-- without it the dav app ignores our sabre plugin -->
 		<dav/>
 	</types>
+	<category>files</category>
+	<website>https://github.com/nowrap/teamfolder_nodownload</website>
+	<bugs>https://github.com/nowrap/teamfolder_nodownload/issues</bugs>
+	<repository type="git">https://github.com/nowrap/teamfolder_nodownload.git</repository>
 	<dependencies>
 		<nextcloud min-version="33" max-version="34"/>
 	</dependencies>

@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to build and release (e.g. v0.3.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - name: Derive version from the tag
+        id: version
+        run: |
+          tag='${{ github.event.inputs.tag || github.ref_name }}'
+          version=${tag#v}
+          [[ $version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "tag '$tag' is not vMAJOR.MINOR.PATCH"; exit 1; }
+          # Nextcloud reads the version from info.xml, so a tag that disagrees would ship a wrong upgrade
+          grep -q "<version>$version</version>" appinfo/info.xml || { echo "appinfo/info.xml is not $version"; exit 1; }
+          echo "tag=$tag" >>"$GITHUB_OUTPUT"
+          echo "version=$version" >>"$GITHUB_OUTPUT"
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Test
+        run: |
+          find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l
+          php tests/check.php
+
+      # App store layout: one top-level folder named like the app id; tests and git files left out.
+      - name: Package
+        run: |
+          mkdir -p dist
+          git archive --prefix=teamfolder_nodownload/ HEAD | tar -x -C dist
+          rm -rf dist/teamfolder_nodownload/{tests,.github,.gitattributes,.gitignore}
+          tar --owner=0 --group=0 -czf "dist/teamfolder_nodownload-${{ steps.version.outputs.version }}.tar.gz" -C dist teamfolder_nodownload
+          cd dist && sha256sum teamfolder_nodownload-*.tar.gz >SHA256SUMS.txt
+
+      - name: Create release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: ${{ steps.version.outputs.tag }}
+          generate_release_notes: true
+          files: |
+            dist/teamfolder_nodownload-${{ steps.version.outputs.version }}.tar.gz
+            dist/SHA256SUMS.txt
+          body: |
+            Requires Nextcloud 33 or 34 with the Team folders app.
+
+            ```bash
+            cd /path/to/nextcloud/apps
+            tar -xzf teamfolder_nodownload-${{ steps.version.outputs.version }}.tar.gz
+            chown -R www-data:www-data teamfolder_nodownload
+            sudo -u www-data php ../occ app:enable teamfolder_nodownload   # or: occ upgrade
+            ```
+
+            Verify the download:
+
+            ```bash
+            sha256sum -c SHA256SUMS.txt
+            ```

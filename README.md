@@ -69,6 +69,9 @@ php tests/check.php                     # rule logic, no Nextcloud needed
 NC_URL=https://cloud.example NC_USER=blocked-user NC_PASS=… NC_ADMIN=admin NC_ADMIN_PASS=… \
   FOLDER=Wissen FILE=test.txt tests/e2e.sh
 # add OO_FILEID=<file id of a document in that folder> to check ONLYOFFICE as well
+
+# throwaway Nextcloud in Docker with that fixture (what CI runs for 33 and 34)
+eval "$(tests/ci-setup.sh 34 | sed 's/^/export /')" && tests/e2e.sh
 ```
 
 ## License
