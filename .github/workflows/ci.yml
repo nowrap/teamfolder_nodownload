@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # the PHP versions Nextcloud 33 and 34 support
+        php: ['8.2', '8.3', '8.4']
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: PHP syntax
+        run: find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l
+
+      - name: Rule logic
+        run: php tests/check.php
+
+      - name: Shell syntax
+        run: bash -n tests/e2e.sh tests/ci-setup.sh
+
+      - name: Translations are valid JSON
+        run: for f in l10n/*.json; do php -r 'json_decode(file_get_contents($argv[1]), flags: JSON_THROW_ON_ERROR);' "$f"; done
+
+      - name: info.xml against the app store schema
+        run: |
+          sudo apt-get install -y --no-install-recommends libxml2-utils >/dev/null
+          curl -fsSL https://apps.nextcloud.com/schema/apps/info.xsd -o /tmp/info.xsd
+          xmllint --noout --schema /tmp/info.xsd appinfo/info.xml
+
+  e2e:
+    # The download block lives in Sabre plugins, event listeners and a global middleware;
+    # only a running Nextcloud with the Team folders app shows whether they still hook in.
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        nextcloud: ['33', '34']
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Start Nextcloud ${{ matrix.nextcloud }} with the app
+        run: tests/ci-setup.sh ${{ matrix.nextcloud }}
+
+      - name: End-to-end tests
+        run: tests/e2e.sh
+
+      - name: Nextcloud log on failure
+        if: failure()
+        run: docker exec -u www-data nc tail -n 50 data/nextcloud.log || true
