@@ -18,6 +18,7 @@ For a user whose every group with access to the folder is blocked:
 | ZIP download of the folder or of a parent folder containing it | refused |
 | Older versions, deleted files in the trash (restore still works) | `403` |
 | Direct download links (`/ocs/v2.php/apps/dav/api/v1/direct`) | refused |
+| ONLYOFFICE editor: download, print, copy | disabled; "download as" (`/apps/onlyoffice/downloadas`) `403` |
 | Viewer, previews, upload, edit | **allowed** |
 
 One group without a block wins: a user who is also in an allowed group (e.g. admins) may download.
@@ -53,6 +54,9 @@ app – and with it the block – until `max-version` is raised.
   without `Sec-Fetch-Site: same-origin` (or with `Sec-Fetch-Dest: document`), refuses COPY/MOVE to
   another storage. Covers files, versions and team folder trash.
 - `lib/DownloadListener.php` – listens to `BeforeZipCreatedEvent` and `BeforeDirectFileDownloadEvent`.
+- `lib/OnlyOfficeMiddleware.php` – global middleware for the ONLYOFFICE connector: refuses "download as"
+  and turns off download/print/copy in the editor config, re-signing it with the ONLYOFFICE JWT secret.
+  Depends on ONLYOFFICE internals – check after ONLYOFFICE updates (`OO_FILEID` in `tests/e2e.sh`).
 - `lib/Rules.php` – rules in app config, "blocked only if every access group is blocked".
 
 ## Tests
@@ -64,6 +68,7 @@ php tests/check.php                     # rule logic, no Nextcloud needed
 # NC_ADMIN in an allowed group of that folder
 NC_URL=https://cloud.example NC_USER=blocked-user NC_PASS=… NC_ADMIN=admin NC_ADMIN_PASS=… \
   FOLDER=Wissen FILE=test.txt tests/e2e.sh
+# add OO_FILEID=<file id of a document in that folder> to check ONLYOFFICE as well
 ```
 
 ## License

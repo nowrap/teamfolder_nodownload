@@ -5,7 +5,7 @@
 <div id="teamfolder-nodownload" class="section">
 	<h2><?php p($l->t('Restrict downloads')); ?></h2>
 	<p class="settings-hint"><?php p($l->t('Default: download allowed. Tick a box to hide the download button for that group in the team folder and to block sync and WebDAV clients. A user who has access through another group without a block may still download.')); ?></p>
-	<p class="settings-hint"><?php p($l->t('Also blocked: copy or move out of the folder, ZIP, versions, trash and direct links. Viewing stays possible – this is a hurdle, not copy protection.')); ?></p>
+	<p class="settings-hint"><?php p($l->t('Also blocked: copy or move out of the folder, ZIP, versions, trash, direct links and download/print in ONLYOFFICE. Viewing stays possible – this is a hurdle, not copy protection.')); ?></p>
 	<p class="settings-hint"><?php p($l->t('Remove the "Share" permission from blocked groups, otherwise a public link allows downloading. Teams (circles) are not taken into account.')); ?></p>
 	<?php if (empty($_['names'])): ?>
 		<p><?php p($l->t('No team folders found.')); ?></p>

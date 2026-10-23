@@ -4,8 +4,8 @@
 	<id>teamfolder_nodownload</id>
 	<name>Team folder: no download</name>
 	<summary>Hide the download for selected groups in team folders</summary>
-	<description>Per team folder and group: hides download buttons (files list, viewer) and blocks downloads via sync/WebDAV clients, copy/move out, zip, versions, trash and direct links. A hurdle, not DRM: whoever can view a file can still copy it.</description>
-	<version>0.2.1</version>
+	<description>Per team folder and group: hides download buttons (files list, viewer) and blocks downloads via sync/WebDAV clients, copy/move out, zip, versions, trash, direct links and the ONLYOFFICE editor. A hurdle, not DRM: whoever can view a file can still copy it.</description>
+	<version>0.3.0</version>
 	<licence>agpl</licence>
 	<author homepage="https://github.com/nowrap">nowrap</author>
 	<namespace>TeamfolderNoDownload</namespace>

@@ -65,5 +65,13 @@ expect "trash GET like sync client" 403 "$(code -u "$U" "$NC_URL$trash")"
 expect "trash restore" 201 "$(code -u "$U" -X MOVE -H "Destination: $NC_URL/remote.php/dav/trashbin/$NC_USER/restore/$(basename "$trash")" "$NC_URL$trash")"
 code -u "$U" -X DELETE "$D/$FOLDER/e2e-inner.txt" >/dev/null
 
+# optional: ONLYOFFICE, OO_FILEID = file id of a document in the blocked folder
+if [ -n "${OO_FILEID:-}" ]; then
+	expect "ONLYOFFICE download as" 403 "$(code -u "$U" "$NC_URL/apps/onlyoffice/downloadas?fileId=$OO_FILEID")"
+	perms=$(curl -sk -u "$U" -H 'OCS-APIRequest: true' -H 'Accept: application/json' \
+		"$NC_URL/ocs/v2.php/apps/onlyoffice/api/v1/config/$OO_FILEID" | grep -o '"permissions":{[^}]*}')
+	expect "ONLYOFFICE config download/print/copy" 3 "$(echo "$perms" | grep -o '"\(download\|print\|copy\)":false' | wc -l | tr -d ' ')"
+fi
+
 echo "$fails failed"
 [ "$fails" -eq 0 ]

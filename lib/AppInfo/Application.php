@@ -3,6 +3,7 @@
 namespace OCA\TeamfolderNoDownload\AppInfo;
 
 use OCA\TeamfolderNoDownload\DownloadListener;
+use OCA\TeamfolderNoDownload\OnlyOfficeMiddleware;
 use OCA\TeamfolderNoDownload\Rules;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
@@ -19,6 +20,7 @@ class Application extends App implements IBootstrap {
 	public function register(IRegistrationContext $context): void {
 		$context->registerEventListener(BeforeZipCreatedEvent::class, DownloadListener::class);
 		$context->registerEventListener(BeforeDirectFileDownloadEvent::class, DownloadListener::class);
+		$context->registerMiddleware(OnlyOfficeMiddleware::class, true);
 	}
 
 	public function boot(IBootContext $context): void {
