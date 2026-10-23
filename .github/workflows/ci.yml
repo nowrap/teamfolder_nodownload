@@ -35,7 +35,8 @@ jobs:
         run: bash -n tests/e2e.sh tests/ci-setup.sh
 
       - name: Translations are valid JSON
-        run: for f in l10n/*.json; do php -r 'json_decode(file_get_contents($argv[1]), flags: JSON_THROW_ON_ERROR);' "$f"; done
+        run: |
+          for f in l10n/*.json; do php -r 'json_decode(file_get_contents($argv[1]), flags: JSON_THROW_ON_ERROR);' "$f"; done
 
       - name: info.xml against the app store schema
         run: |
