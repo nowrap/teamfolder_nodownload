@@ -1,0 +1,28 @@
+/* Nextcloud spacing variables, so it matches the other admin pages */
+#teamfolder-nodownload table {
+	width: auto;
+	margin-block: calc(var(--default-grid-baseline) * 4);
+	border-collapse: collapse;
+}
+
+#teamfolder-nodownload th,
+#teamfolder-nodownload td {
+	height: var(--default-clickable-area);
+	padding-inline: calc(var(--default-grid-baseline) * 4);
+	border-bottom: 1px solid var(--color-border);
+	text-align: start;
+}
+
+#teamfolder-nodownload th {
+	color: var(--color-text-maxcontrast);
+	font-weight: normal;
+}
+
+#teamfolder-nodownload th:first-child,
+#teamfolder-nodownload td:first-child {
+	padding-inline-start: 0;
+}
+
+#teamfolder-nodownload-msg {
+	margin-inline-start: calc(var(--default-grid-baseline) * 2);
+}

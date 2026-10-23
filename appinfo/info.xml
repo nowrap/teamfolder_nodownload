@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+	<id>teamfolder_nodownload</id>
+	<name>Team folder: no download</name>
+	<summary>Hide the download for selected groups in team folders</summary>
+	<description>Per team folder and group: hides download buttons (files list, viewer) and blocks downloads via sync/WebDAV clients, copy/move out, zip, versions, trash and direct links. A hurdle, not DRM: whoever can view a file can still copy it.</description>
+	<version>0.2.1</version>
+	<licence>agpl</licence>
+	<author homepage="https://github.com/nowrap">nowrap</author>
+	<namespace>TeamfolderNoDownload</namespace>
+	<category>files</category>
+	<website>https://github.com/nowrap/teamfolder_nodownload</website>
+	<bugs>https://github.com/nowrap/teamfolder_nodownload/issues</bugs>
+	<repository type="git">https://github.com/nowrap/teamfolder_nodownload.git</repository>
+	<types>
+		<!-- without it the dav app ignores our sabre plugin -->
+		<dav/>
+	</types>
+	<dependencies>
+		<nextcloud min-version="33" max-version="34"/>
+	</dependencies>
+	<settings>
+		<admin>OCA\TeamfolderNoDownload\Settings\Admin</admin>
+		<admin-section>OCA\TeamfolderNoDownload\Settings\Section</admin-section>
+	</settings>
+	<sabre>
+		<plugins>
+			<plugin>OCA\TeamfolderNoDownload\Dav\NoDownloadPlugin</plugin>
+		</plugins>
+	</sabre>
+</info>
